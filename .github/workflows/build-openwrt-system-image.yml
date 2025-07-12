@@ -15,9 +15,9 @@ on:
         default: "openwrt-main"
         type: choice
         options:
-          - openwrt-main
-          - lede-master
-          - immortalwrt-master
+          - istoreos
+          - lede
+          - immortalwrt
       openwrt_board:
         description: "Select device board"
         required: false
@@ -300,17 +300,17 @@ jobs:
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
           # Set up compilation source code
-          if [[ "${{ inputs.source_branch }}" == *"openwrt"* ]]; then
-              REPO_URL="https://github.com/openwrt/openwrt"
+          if [[ "${{ inputs.source_branch }}" == *"istoreos"* ]]; then
+              REPO_URL="https://github.com/jfy9606/istoreos"
               REPO_BRANCH="main"
-              TAGS_NAME="official"
+              TAGS_NAME="istoreos"
           elif [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
-              REPO_URL="https://github.com/coolsnowwolf/lede"
-              REPO_BRANCH="master"
+              REPO_URL="https://github.com/jfy9606/lede"
+              REPO_BRANCH="main"
               TAGS_NAME="lede"
           elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
-              REPO_URL="https://github.com/immortalwrt/immortalwrt"
-              REPO_BRANCH="master"
+              REPO_URL="https://github.com/jfy9606/immortalwrt"
+              REPO_BRANCH="main"
               TAGS_NAME="immortalwrt"
           else
               echo "Unknown source code repository."
