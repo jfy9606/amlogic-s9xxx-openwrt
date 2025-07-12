@@ -85,7 +85,7 @@ on:
         type: choice
         options:
           - -ophub
-          - -yourname
+          - -jfy9606
 
 env:
   TZ: America/New_York
