@@ -222,6 +222,7 @@ on:
           - flippy
           - dev
           - beta
+          - rk35xx
       openwrt_storage:
         description: "Select image storage type."
         required: false
