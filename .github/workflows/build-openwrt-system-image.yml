@@ -18,6 +18,7 @@ on:
           - openwrt_main
           - lede_master
           - immortalwrt_master
+          - istoreos_main
       openwrt_board:
         description: "Select device board"
         required: false
@@ -368,6 +369,8 @@ jobs:
               REPO_URL="https://github.com/coolsnowwolf/lede"
           elif [[ "${{ inputs.source_branch }}" =~ ^immortalwrt ]]; then
               REPO_URL="https://github.com/immortalwrt/immortalwrt"
+          elif [[ "${{ inputs.source_branch }}" =~ ^istoreos ]]; then
+              REPO_URL="https://github.com/istoreos/istoreos"
           else
               echo "Error: Unknown source code repository."
               exit 1
