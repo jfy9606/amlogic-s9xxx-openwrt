@@ -841,6 +841,12 @@ make_image() {
     # Write the specific bootloader for [ Rockchip ] boxes
     [[ "${PLATFORM}" == "rockchip" ]] && {
         bootloader_path="${uboot_path}/${PLATFORM}/${board}"
+        # Fallback to the base board directory if the variant directory does not exist
+        if [[ ! -d "${bootloader_path}" ]]; then
+            base_board="$(echo "${board}" | sed -E 's/(-vpu|-mod|-v2|-v3)$//')"
+            [[ "${base_board}" != "${board}" && -d "${uboot_path}/${PLATFORM}/${base_board}" ]] && bootloader_path="${uboot_path}/${PLATFORM}/${base_board}"
+        fi
+
         if [[ -n "${BOOTLOADER_IMG}" && -f "${bootloader_path}/${BOOTLOADER_IMG}" ]] &&
             [[ -n "${MAINLINE_UBOOT}" && -f "${bootloader_path}/${MAINLINE_UBOOT}" ]] &&
             [[ -n "${TRUST_IMG}" && -f "${bootloader_path}/${TRUST_IMG}" ]]; then
@@ -865,6 +871,12 @@ make_image() {
     # Write the specific bootloader for [ Allwinner ] boxes
     [[ "${PLATFORM}" == "allwinner" ]] && {
         bootloader_path="${uboot_path}/${PLATFORM}/${board}"
+        # Fallback to the base board directory if the variant directory does not exist
+        if [[ ! -d "${bootloader_path}" ]]; then
+            base_board="$(echo "${board}" | sed -E 's/(-vpu|-mod|-v2|-v3)$//')"
+            [[ "${base_board}" != "${board}" && -d "${uboot_path}/${PLATFORM}/${base_board}" ]] && bootloader_path="${uboot_path}/${PLATFORM}/${base_board}"
+        fi
+
         if [[ -n "${BOOTLOADER_IMG}" && -f "${bootloader_path}/${BOOTLOADER_IMG}" ]] &&
             [[ -n "${MAINLINE_UBOOT}" && -f "${bootloader_path}/${MAINLINE_UBOOT}" ]]; then
             dd if="${bootloader_path}/${BOOTLOADER_IMG}" of="${loop_new}" conv=fsync,notrunc bs=8k seek=1 2>/dev/null
@@ -1011,8 +1023,8 @@ refactor_bootfs() {
     }
 
     # Add an alternate file (/boot/extlinux/extlinux.conf)
-    boot_extlinux_file="extlinux/extlinux.conf.bak"
-    rename_extlinux_file="extlinux/extlinux.conf"
+    boot_extlinux_file="extlinux/extlinux.conf"
+    [[ -f "${boot_extlinux_file}.bak" ]] && boot_extlinux_file="${boot_extlinux_file}.bak"
     [[ -f "${boot_extlinux_file}" ]] && {
         sed -i \
             -e "s|LABEL=ROOTFS|${uenv_rootdev}|g" \
@@ -1021,7 +1033,7 @@ refactor_bootfs() {
             -e "s|rk.*.dtb|${FDTFILE}|g" \
             "${boot_extlinux_file}"
         # If needed, such as t95z(s905x), rename delete .bak
-        [[ "${BOOT_CONF}" == "extlinux.conf" ]] && mv -f "${boot_extlinux_file}" "${rename_extlinux_file}"
+        [[ "${boot_extlinux_file}" == *.bak && "${BOOT_CONF}" == "extlinux.conf" ]] && mv -f "${boot_extlinux_file}" "extlinux/extlinux.conf"
     }
 
     # Edit the armbianEnv.txt
